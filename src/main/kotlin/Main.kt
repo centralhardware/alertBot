@@ -18,9 +18,9 @@ suspend fun main() {
         val timer = Timer()
         timer.schedule(object : TimerTask() {
             override fun run() {
-                val price = runBlocking { getPrice() }
-                runBlocking { send(System.getenv("CHAT").toLong().toChatId(), price.toString()) }
-                println("send data $price")
+                val message = runBlocking { getMessage() }
+                runBlocking { send(System.getenv("CHAT").toLong().toChatId(), message) }
+                println("send data $message")
             }
         }, 0L, 3600000L)
         onCommand("price") {
