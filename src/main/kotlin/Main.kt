@@ -7,10 +7,13 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 suspend fun main() {
@@ -18,19 +21,30 @@ suspend fun main() {
         val timer = Timer()
         timer.schedule(object : TimerTask() {
             override fun run() {
-                val price = runBlocking { getPrice() }
-                runBlocking { send(System.getenv("CHAT").toLong().toChatId(), price.toString()) }
-                println("send data $price")
+//                val price = runBlocking { getPrice() }
+//                runBlocking { send(System.getenv("CHAT").toLong().toChatId(), price.toString()) }
+//                println("send data $price")
             }
         }, 0L, 3600000L)
         onCommand("price") {
-            sendTextMessage(it.chat, getPrice().toString())
+            sendTextMessage(it.chat, getMessage())
         }
     }
 }
 
 val client = HttpClient(CIO)
 const val TON_API_URL = "https://tonapi.io/v2/rates?tokens=ton&currencies=eur"
-suspend fun getPrice() = Json.parseToJsonElement(
-    client.get(TON_API_URL).body()
-).jsonObject["rates"]!!.jsonObject["TON"]!!.jsonObject["prices"]!!.jsonObject["EUR"]!!.jsonPrimitive.float
+suspend fun getPrice(): Currency? {
+    val res = Json.decodeFromString<Rates>(client.get(TON_API_URL).bodyAsText()).currencies["TON"]
+    println(res)
+    return res;
+}
+
+suspend fun getMessage(): String = getPrice()?.let {
+    """
+        price: ${it.prices["EUR"].toString().substring(0,5)}
+        diff_24h: ${it.diff24h["EUR"]}
+        diff_7d: ${it.diff7d["EUR"]}
+        diff_30d: ${it.diff30d["EUR"]}
+    """.trimIndent()
+}?: ""
