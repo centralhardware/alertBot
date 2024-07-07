@@ -20,7 +20,6 @@ suspend fun main() {
             override fun run() {
                 val message = runBlocking { getMessage() }
                 runBlocking { send(System.getenv("CHAT").toLong().toChatId(), message) }
-                println("send data $message")
             }
         }, 0L, 3600000L)
         onCommand("price") {
