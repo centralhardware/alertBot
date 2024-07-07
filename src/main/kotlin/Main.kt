@@ -4,16 +4,13 @@ import dev.inmo.tgbotapi.extensions.behaviour_builder.telegramBotWithBehaviourAn
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onCommand
 import dev.inmo.tgbotapi.types.toChatId
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.*
-import java.math.BigDecimal
-import java.math.RoundingMode
+import kotlinx.serialization.json.Json
 import java.util.*
 
 suspend fun main() {
@@ -21,9 +18,9 @@ suspend fun main() {
         val timer = Timer()
         timer.schedule(object : TimerTask() {
             override fun run() {
-//                val price = runBlocking { getPrice() }
-//                runBlocking { send(System.getenv("CHAT").toLong().toChatId(), price.toString()) }
-//                println("send data $price")
+                val price = runBlocking { getPrice() }
+                runBlocking { send(System.getenv("CHAT").toLong().toChatId(), price.toString()) }
+                println("send data $price")
             }
         }, 0L, 3600000L)
         onCommand("price") {
