@@ -8,6 +8,6 @@ FROM findepi/graalvm:java21
 
 WORKDIR /znatokiBot
 
-COPY --from=gradle /home/gradle/build/libs/currencyAlert-jvm-1.0-SNAPSHOT.jar .
+COPY --from=gradle /home/gradle/build/libs/alertBOt-1.0-SNAPSHOT-standalone.jar .
 
-CMD ["java", "-jar", "currencyAlert-jvm-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "alertBOt-1.0-SNAPSHOT-standalone.jar"]
