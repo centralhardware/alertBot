@@ -17,7 +17,7 @@ import kotlinx.serialization.json.Json
 
 suspend fun main() {
     telegramBotWithBehaviourAndLongPolling(System.getenv("TOKEN"), CoroutineScope(Dispatchers.IO)) {
-        doOnce("0 * * * *") {
+        doOnce("0 0 * * *") {
             val message = runBlocking { getMessage() }
             runBlocking { send(System.getenv("CHAT").toLong().toChatId(), message) }
         }
