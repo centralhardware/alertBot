@@ -13,6 +13,7 @@ repositories {
 dependencies {
     implementation("dev.inmo:tgbotapi:15.0.0")
     implementation("io.ktor:ktor-client-core-jvm:2.3.12")
+    implementation("dev.inmo:krontab:2.3.0")
 }
 
 tasks.test {

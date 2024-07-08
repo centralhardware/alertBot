@@ -1,7 +1,10 @@
+import dev.inmo.krontab.doOnce
+import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
 import dev.inmo.tgbotapi.extensions.api.send.send
 import dev.inmo.tgbotapi.extensions.api.send.sendTextMessage
 import dev.inmo.tgbotapi.extensions.behaviour_builder.telegramBotWithBehaviourAndLongPolling
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onCommand
+import dev.inmo.tgbotapi.types.BotCommand
 import dev.inmo.tgbotapi.types.toChatId
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -11,17 +14,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import java.util.*
 
 suspend fun main() {
     telegramBotWithBehaviourAndLongPolling(System.getenv("TOKEN"), CoroutineScope(Dispatchers.IO)) {
-        val timer = Timer()
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                val message = runBlocking { getMessage() }
-                runBlocking { send(System.getenv("CHAT").toLong().toChatId(), message) }
-            }
-        }, 0L, 3600000L)
+        doOnce("0 * * * *") {
+            val message = runBlocking { getMessage() }
+            runBlocking { send(System.getenv("CHAT").toLong().toChatId(), message) }
+        }
+        setMyCommands(
+            BotCommand("price", "get ton price")
+        )
         onCommand("price") {
             sendTextMessage(it.chat, getMessage())
         }
