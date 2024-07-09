@@ -28,7 +28,7 @@ import java.time.ZoneOffset
 import javax.imageio.ImageIO
 
 suspend fun main() {
-    telegramBotWithBehaviourAndLongPolling(System.getenv("TOKEN"), CoroutineScope(Dispatchers.IO),
+    val b = telegramBotWithBehaviourAndLongPolling(System.getenv("TOKEN"), CoroutineScope(Dispatchers.IO),
         defaultExceptionsHandler = {it -> println(it) }) {
         setMyCommands(
             BotCommand("price", "get ton price")
@@ -38,13 +38,13 @@ suspend fun main() {
             ImageIO.write(getChartImage(), "png", file)
             sendPhoto(it.chat, InputFile.fromFile(file), getMessage())
         }
-        async {
-            doOnce("0 0 * * *") {
-                val message = runBlocking { getMessage() }
-                runBlocking { send(System.getenv("CHAT").toLong().toChatId(), message) }
-            }
-        }
-    }.second.join()
+    }
+
+    doOnce("0 0 * * *") {
+        val file = File.createTempFile("alertBOt", "")
+        ImageIO.write(getChartImage(), "png", file)
+        b.first.sendPhoto(System.getenv("CHAT").toLong().toChatId(), InputFile.fromFile(file), getMessage())
+    }
 }
 
 val client = HttpClient(CIO)
