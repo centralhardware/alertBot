@@ -1,91 +1,91 @@
 import dev.inmo.krontab.doOnce
+import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
-import dev.inmo.tgbotapi.extensions.api.send.media.sendPhoto
-import dev.inmo.tgbotapi.extensions.api.send.send
+import dev.inmo.tgbotapi.extensions.api.send.media.sendMediaGroup
 import dev.inmo.tgbotapi.extensions.behaviour_builder.telegramBotWithBehaviourAndLongPolling
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onCommand
 import dev.inmo.tgbotapi.requests.abstracts.InputFile
 import dev.inmo.tgbotapi.types.BotCommand
+import dev.inmo.tgbotapi.types.IdChatIdentifier
+import dev.inmo.tgbotapi.types.media.TelegramMediaPhoto
 import dev.inmo.tgbotapi.types.toChatId
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import org.jetbrains.kotlinx.dataframe.api.column
 import org.jetbrains.kotlinx.kandy.dsl.plot
 import org.jetbrains.kotlinx.kandy.letsplot.export.toBufferedImage
+import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line
 import org.jetbrains.kotlinx.kandy.util.color.Color.Companion.BLUE
 import java.awt.image.BufferedImage
 import java.io.File
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import javax.imageio.ImageIO
 
+lateinit var bot:TelegramBot
 suspend fun main() {
     val b = telegramBotWithBehaviourAndLongPolling(System.getenv("TOKEN"), CoroutineScope(Dispatchers.IO),
-        defaultExceptionsHandler = {it -> println(it) }) {
+        defaultExceptionsHandler = {it -> it.printStackTrace() }) {
         setMyCommands(
             BotCommand("price", "get ton price")
         )
         onCommand("price") {
-            val file = File.createTempFile("alertBOt", "")
-            ImageIO.write(getChartImage(), "png", file)
-            sendPhoto(it.chat, InputFile.fromFile(file), getMessage())
+            sendAnswer(it.chat.id)
         }
     }
+    bot = b.first
 
     doOnce("0 0 * * *") {
-        val file = File.createTempFile("alertBOt", "")
-        ImageIO.write(getChartImage(), "png", file)
-        b.first.sendPhoto(System.getenv("CHAT").toLong().toChatId(), InputFile.fromFile(file), getMessage())
+        sendAnswer(System.getenv("CHAT").toLong().toChatId())
     }
 }
 
-val client = HttpClient(CIO)
-const val TON_API_BASE_URL = "https://tonapi.io/v2"
-
-const val RATES_URL = "$TON_API_BASE_URL/rates?tokens=ton&currencies=eur"
-suspend fun getRates(): Currency? {
-    val res = Json.decodeFromString<Rates>(client.get(RATES_URL).bodyAsText()).currencies["TON"]
-    println(res)
-    return res;
+suspend fun sendAnswer(chatId: IdChatIdentifier) {
+    val photos = getChartImages().map {
+        val file = File.createTempFile("alertBot", "")
+        ImageIO.write(it, "png", file)
+        TelegramMediaPhoto(InputFile.fromFile(file))
+    }.toMutableList()
+    photos[0] = photos.first().let { TelegramMediaPhoto(it.file, getMessage()) }
+    bot.sendMediaGroup(chatId, photos)
 }
 
-const val CHART_URL = "$TON_API_BASE_URL/rates/chart?token=ton&currency=eur&points_count=200"
-suspend fun getChart(): Chart {
-    val res = Json.decodeFromString<Chart>(client.get(CHART_URL){
-        url {
-            parameters.append("start_date", LocalDateTime.now().minusDays(1).toEpochSecond(ZoneOffset.UTC).toString())
-            parameters.append("end_date", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC).toString())
-        }
-    }.bodyAsText())
-    println(res)
-    return res;
-}
+suspend fun getChartImages(): List<BufferedImage> {
+    val ts = column<ZonedDateTime>("date")
+    val price = column<Double>("price(EUR)")
+    return listOf(
+        plot(get24HChart().toDataset()) {
+            layout {
+                title = "ton price(EUR) 24 hours"
+            }
+            line {
+                x(ts)
+                y(price)
+                color = BLUE
+            }
+        }.toBufferedImage(),
+        plot(get7dChart().toDataset()) {
+            layout {
+                title = "ton price(EUR) 7 days"
+            }
+            line {
+                x(ts)
+                y(price)
+                color = BLUE
+            }
+        }.toBufferedImage(),
+        plot(get30dChart().toDataset()) {
+            layout {
+                title = "ton price(EUR) 30 days"
+            }
+            line {
+                x(ts)
+                y(price)
+                color = BLUE
+            }
+        }.toBufferedImage()
 
-suspend fun getChartImage(): BufferedImage {
-    val data = getChart().points.map {
-        Pair(it[0], it[1])
-    }.toList()
-    val ts = column<Long>("x")
-    val price = column<Double>("y")
-    val dataset = mapOf(
-        "x" to data.map { it.first.toLong() }.toList(),
-        "y" to data.map { it.second }.toList()
     )
-    return plot(dataset) {
-        line {
-            x(ts)
-            y(price)
-            color = BLUE
-        }
-    }.toBufferedImage()
 }
 
 suspend fun getMessage(): String = getRates()?.let {
