@@ -8,84 +8,69 @@ import dev.inmo.tgbotapi.requests.abstracts.InputFile
 import dev.inmo.tgbotapi.types.BotCommand
 import dev.inmo.tgbotapi.types.IdChatIdentifier
 import dev.inmo.tgbotapi.types.media.TelegramMediaPhoto
-import dev.inmo.tgbotapi.types.toChatId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.kotlinx.dataframe.api.column
 import org.jetbrains.kotlinx.kandy.dsl.plot
+import org.jetbrains.kotlinx.kandy.ir.Plot
 import org.jetbrains.kotlinx.kandy.letsplot.export.toBufferedImage
 import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line
 import org.jetbrains.kotlinx.kandy.util.color.Color.Companion.BLUE
-import java.awt.image.BufferedImage
 import java.io.File
 import java.time.ZonedDateTime
 import javax.imageio.ImageIO
 
-lateinit var bot:TelegramBot
+lateinit var bot: TelegramBot
 suspend fun main() {
-    val b = telegramBotWithBehaviourAndLongPolling(System.getenv("TOKEN"), CoroutineScope(Dispatchers.IO),
-        defaultExceptionsHandler = {it -> it.printStackTrace() }) {
+    val b = telegramBotWithBehaviourAndLongPolling(token, CoroutineScope(Dispatchers.IO),
+        defaultExceptionsHandler = { it.printStackTrace() }) {
         setMyCommands(
             BotCommand("price", "get ton price")
         )
         onCommand("price") {
             sendAnswer(it.chat.id)
+            InputFile
         }
     }
     bot = b.first
 
     doOnce("0 0 * * *") {
-        sendAnswer(System.getenv("CHAT").toLong().toChatId())
+        sendAnswer(chatId)
     }
 }
 
 suspend fun sendAnswer(chatId: IdChatIdentifier) {
-    val photos = getChartImages().map {
+    val photos = getChartImages().map { it.toBufferedImage() }.map {
         val file = File.createTempFile("alertBot", "")
         ImageIO.write(it, "png", file)
         TelegramMediaPhoto(InputFile.fromFile(file))
     }.toMutableList()
-    photos[0] = photos.first().let { TelegramMediaPhoto(it.file, getMessage()) }
+    photos[0] = TelegramMediaPhoto(photos.first().file, getMessage())
     bot.sendMediaGroup(chatId, photos)
 }
 
-suspend fun getChartImages(): List<BufferedImage> {
-    val ts = column<ZonedDateTime>("date")
-    val price = column<Double>("price(EUR)")
+suspend fun getChartImages(): List<Plot> {
     return listOf(
-        plot(get24HChart().toDataset()) {
-            layout {
-                title = "ton price(EUR) 24 hours"
-            }
-            line {
-                x(ts)
-                y(price)
-                color = BLUE
-            }
-        }.toBufferedImage(),
-        plot(get7dChart().toDataset()) {
-            layout {
-                title = "ton price(EUR) 7 days"
-            }
-            line {
-                x(ts)
-                y(price)
-                color = BLUE
-            }
-        }.toBufferedImage(),
-        plot(get30dChart().toDataset()) {
-            layout {
-                title = "ton price(EUR) 30 days"
-            }
-            line {
-                x(ts)
-                y(price)
-                color = BLUE
-            }
-        }.toBufferedImage()
-
+        createPlot(get24HChart().toDataset(), "24 hour"),
+        createPlot(get7dChart().toDataset(), "1 week"),
+        createPlot(get1mChart().toDataset(), "1 month"),
+        createPlot(get3mChart().toDataset(), "3 month"),
     )
+}
+
+val ts = column<ZonedDateTime>("date")
+val price = column<Double>("price(EUR)")
+fun createPlot(dataset: Map<String, List<Any>>, period: String) = plot(dataset) {
+    layout {
+        title = "ton price(EUR) $period"
+    }
+    line {
+        x(ts)
+        y(price)
+        color = BLUE
+    }
+
 }
 
 suspend fun getMessage(): String = getRates()?.let {
