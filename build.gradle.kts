@@ -1,8 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
+    kotlin("jvm") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -14,10 +14,10 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.inmo:tgbotapi:15.0.0")
+    implementation("dev.inmo:tgbotapi:17.0.0")
     implementation("io.ktor:ktor-client-core-jvm:2.3.12")
-    implementation("dev.inmo:krontab:2.3.0")
-    implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.6.0")
+    implementation("dev.inmo:krontab:2.4.0")
+    implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.7.0")
 }
 
 tasks.test {

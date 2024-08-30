@@ -30,4 +30,3 @@ suspend fun getChart(points: Int, startDate: LocalDateTime, endDate: LocalDateTi
 suspend fun get24HChart(): Chart = getChart(200,LocalDateTime.now().minusDays(1))
 suspend fun get7dChart(): Chart = getChart(200,LocalDateTime.now().minusWeeks(1))
 suspend fun get1mChart(): Chart = getChart(300, LocalDateTime.now().minusMonths(1))
-suspend fun get3mChart(): Chart = getChart(600,LocalDateTime.now().minusMonths(3))

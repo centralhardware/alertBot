@@ -10,6 +10,7 @@ import dev.inmo.tgbotapi.types.IdChatIdentifier
 import dev.inmo.tgbotapi.types.media.TelegramMediaPhoto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.datetime.LocalDateTime
 import org.jetbrains.kotlinx.dataframe.api.column
 import org.jetbrains.kotlinx.kandy.dsl.plot
 import org.jetbrains.kotlinx.kandy.ir.Plot
@@ -18,7 +19,6 @@ import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line
 import org.jetbrains.kotlinx.kandy.util.color.Color.Companion.BLUE
 import java.io.File
-import java.time.ZonedDateTime
 import javax.imageio.ImageIO
 
 lateinit var bot: TelegramBot
@@ -55,11 +55,10 @@ suspend fun getChartImages(): List<Plot> {
         createPlot(get24HChart().toDataset(), "24 hour"),
         createPlot(get7dChart().toDataset(), "1 week"),
         createPlot(get1mChart().toDataset(), "1 month"),
-        createPlot(get3mChart().toDataset(), "3 month"),
     )
 }
 
-val ts = column<ZonedDateTime>("date")
+val ts = column<LocalDateTime>("date")
 val price = column<Double>("price(EUR)")
 fun createPlot(dataset: Map<String, List<Any>>, period: String) = plot(dataset) {
     layout {
