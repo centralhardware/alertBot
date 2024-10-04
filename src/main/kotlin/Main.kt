@@ -1,3 +1,4 @@
+import com.sun.net.httpserver.HttpServer
 import dev.inmo.krontab.doOnce
 import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
@@ -19,10 +20,12 @@ import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line
 import org.jetbrains.kotlinx.kandy.util.color.Color.Companion.BLUE
 import java.io.File
+import java.net.InetSocketAddress
 import javax.imageio.ImageIO
 
 lateinit var bot: TelegramBot
 suspend fun main() {
+    HttpServer.create().apply { bind(InetSocketAddress(80), 0); createContext("/health") { it.sendResponseHeaders(200, 0); it.responseBody.close() }; start() }
     val b = telegramBotWithBehaviourAndLongPolling(token, CoroutineScope(Dispatchers.IO),
         defaultExceptionsHandler = { it.printStackTrace() }) {
         setMyCommands(
