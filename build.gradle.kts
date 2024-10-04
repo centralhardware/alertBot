@@ -14,10 +14,10 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.inmo:tgbotapi:17.0.0")
+    implementation("dev.inmo:tgbotapi:18.2.1")
     implementation("io.ktor:ktor-client-core-jvm:2.3.12")
-    implementation("dev.inmo:krontab:2.4.0")
-    implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.7.0")
+    implementation("dev.inmo:krontab:2.5.0")
+    implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.7.1")
 }
 
 tasks.test {
