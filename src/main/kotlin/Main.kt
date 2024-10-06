@@ -1,5 +1,10 @@
 import com.sun.net.httpserver.HttpServer
 import dev.inmo.krontab.doOnce
+import dev.inmo.kslog.common.KSLog
+import dev.inmo.kslog.common.LogLevel
+import dev.inmo.kslog.common.info
+import dev.inmo.kslog.common.setDefaultKSLog
+import dev.inmo.kslog.common.warning
 import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
 import dev.inmo.tgbotapi.extensions.api.send.media.sendMediaGroup
@@ -9,6 +14,7 @@ import dev.inmo.tgbotapi.requests.abstracts.InputFile
 import dev.inmo.tgbotapi.types.BotCommand
 import dev.inmo.tgbotapi.types.IdChatIdentifier
 import dev.inmo.tgbotapi.types.media.TelegramMediaPhoto
+import dev.inmo.tgbotapi.types.toChatId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.LocalDateTime
@@ -26,20 +32,23 @@ import javax.imageio.ImageIO
 lateinit var bot: TelegramBot
 suspend fun main() {
     HttpServer.create().apply { bind(InetSocketAddress(80), 0); createContext("/health") { it.sendResponseHeaders(200, 0); it.responseBody.close() }; start() }
-    val b = telegramBotWithBehaviourAndLongPolling(token, CoroutineScope(Dispatchers.IO),
-        defaultExceptionsHandler = { it.printStackTrace() }) {
+    setDefaultKSLog(KSLog("alertBot", minLoggingLevel = LogLevel.INFO))
+    val b = telegramBotWithBehaviourAndLongPolling(
+        System.getenv("TOKEN"),
+        CoroutineScope(Dispatchers.IO),
+        defaultExceptionsHandler = { KSLog.warning(it) }) {
         setMyCommands(
             BotCommand("price", "get ton price")
         )
         onCommand("price") {
             sendAnswer(it.chat.id)
-            InputFile
         }
     }
     bot = b.first
 
     doOnce("0 0 * * *") {
-        sendAnswer(chatId)
+        KSLog.info("send pricing")
+        sendAnswer(System.getenv("CHAT").toLong().toChatId())
     }
 }
 
@@ -49,8 +58,10 @@ suspend fun sendAnswer(chatId: IdChatIdentifier) {
         ImageIO.write(it, "png", file)
         TelegramMediaPhoto(InputFile.fromFile(file))
     }.toMutableList()
-    photos[0] = TelegramMediaPhoto(photos.first().file, getMessage())
+    val msg = getMessage()
+    photos[0] = TelegramMediaPhoto(photos.first().file, msg)
     bot.sendMediaGroup(chatId, photos)
+    KSLog.info(msg)
 }
 
 suspend fun getChartImages(): List<Plot> {
