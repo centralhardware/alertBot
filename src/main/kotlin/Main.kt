@@ -1,11 +1,10 @@
-import com.sun.net.httpserver.HttpServer
 import dev.inmo.krontab.doOnce
 import dev.inmo.kslog.common.KSLog
-import dev.inmo.kslog.common.LogLevel
+import dev.inmo.kslog.common.configure
 import dev.inmo.kslog.common.info
-import dev.inmo.kslog.common.setDefaultKSLog
 import dev.inmo.kslog.common.warning
-import dev.inmo.tgbotapi.bot.TelegramBot
+import dev.inmo.tgbotapi.bot.ktor.HealthCheckKtorPipelineStepsHolder
+import dev.inmo.tgbotapi.bot.ktor.telegramBot
 import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
 import dev.inmo.tgbotapi.extensions.api.send.media.sendMediaGroup
 import dev.inmo.tgbotapi.extensions.behaviour_builder.telegramBotWithBehaviourAndLongPolling
@@ -26,17 +25,17 @@ import org.jetbrains.kotlinx.kandy.letsplot.feature.layout
 import org.jetbrains.kotlinx.kandy.letsplot.layers.line
 import org.jetbrains.kotlinx.kandy.util.color.Color.Companion.BLUE
 import java.io.File
-import java.net.InetSocketAddress
 import javax.imageio.ImageIO
 
-lateinit var bot: TelegramBot
+val bot = telegramBot(System.getenv("TOKEN"))
+val healthChecker = HealthCheckKtorPipelineStepsHolder()
 suspend fun main() {
-    HttpServer.create().apply { bind(InetSocketAddress(80), 0); createContext("/health") { it.sendResponseHeaders(200, 0); it.responseBody.close() }; start() }
-    setDefaultKSLog(KSLog("alertBot", minLoggingLevel = LogLevel.INFO))
-    val b = telegramBotWithBehaviourAndLongPolling(
+    KSLog.configure("TonAlertBot")
+    telegramBotWithBehaviourAndLongPolling(
         System.getenv("TOKEN"),
         CoroutineScope(Dispatchers.IO),
-        defaultExceptionsHandler = { KSLog.warning(it) }) {
+        defaultExceptionsHandler = { KSLog.warning(it) },
+        builder = { pipelineStepsHolder = healthChecker }) {
         setMyCommands(
             BotCommand("price", "get ton price")
         )
@@ -44,7 +43,6 @@ suspend fun main() {
             sendAnswer(it.chat.id)
         }
     }
-    bot = b.first
 
     doOnce("0 0 * * *") {
         KSLog.info("send pricing")
