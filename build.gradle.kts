@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     implementation("dev.inmo:tgbotapi:18.2.1")
-    implementation("com.github.centralhardware:telegram-bot-commons:4c913e8abe")
+    implementation("com.github.centralhardware:telegram-bot-commons:41f9b1e19f")
     implementation("io.ktor:ktor-client-core-jvm:2.3.12")
     implementation("dev.inmo:krontab:2.5.0")
     implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.7.1")
