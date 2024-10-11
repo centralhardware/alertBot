@@ -2,6 +2,7 @@ import dev.inmo.krontab.doOnce
 import dev.inmo.kslog.common.KSLog
 import dev.inmo.kslog.common.configure
 import dev.inmo.kslog.common.info
+import dev.inmo.tgbotapi.HealthCheck
 import dev.inmo.tgbotapi.KSLogExceptionsHandler
 import dev.inmo.tgbotapi.bot.ktor.telegramBot
 import dev.inmo.tgbotapi.botToken
@@ -35,6 +36,7 @@ suspend fun main() {
         CoroutineScope(Dispatchers.IO),
         defaultExceptionsHandler = KSLogExceptionsHandler
     ) {
+        HealthCheck.addBot(this)
         setMyCommands(
             BotCommand("price", "get ton price")
         )
