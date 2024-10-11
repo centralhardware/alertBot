@@ -2,9 +2,9 @@ import dev.inmo.krontab.doOnce
 import dev.inmo.kslog.common.KSLog
 import dev.inmo.kslog.common.configure
 import dev.inmo.kslog.common.info
-import dev.inmo.kslog.common.warning
-import dev.inmo.tgbotapi.bot.ktor.HealthCheckKtorPipelineStepsHolder
+import dev.inmo.tgbotapi.KSLogExceptionsHandler
 import dev.inmo.tgbotapi.bot.ktor.telegramBot
+import dev.inmo.tgbotapi.botToken
 import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
 import dev.inmo.tgbotapi.extensions.api.send.media.sendMediaGroup
 import dev.inmo.tgbotapi.extensions.behaviour_builder.telegramBotWithBehaviourAndLongPolling
@@ -27,15 +27,14 @@ import org.jetbrains.kotlinx.kandy.util.color.Color.Companion.BLUE
 import java.io.File
 import javax.imageio.ImageIO
 
-val bot = telegramBot(System.getenv("TOKEN"))
-val healthChecker = HealthCheckKtorPipelineStepsHolder()
+val bot = telegramBot(botToken) {}
 suspend fun main() {
     KSLog.configure("TonAlertBot")
     telegramBotWithBehaviourAndLongPolling(
-        System.getenv("TOKEN"),
+        botToken,
         CoroutineScope(Dispatchers.IO),
-        defaultExceptionsHandler = { KSLog.warning(it) },
-        builder = { pipelineStepsHolder = healthChecker }) {
+        defaultExceptionsHandler = KSLogExceptionsHandler
+    ) {
         setMyCommands(
             BotCommand("price", "get ton price")
         )
