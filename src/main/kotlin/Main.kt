@@ -1,9 +1,8 @@
 import dev.inmo.krontab.doOnce
 import dev.inmo.kslog.common.KSLog
-import dev.inmo.kslog.common.configure
 import dev.inmo.kslog.common.info
-import dev.inmo.tgbotapi.bot.ktor.telegramBot
-import dev.inmo.tgbotapi.botToken
+import dev.inmo.tgbotapi.AppConfig
+import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
 import dev.inmo.tgbotapi.extensions.api.send.media.sendMediaGroup
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onCommand
@@ -24,17 +23,17 @@ import org.jetbrains.kotlinx.kandy.util.color.Color.Companion.BLUE
 import java.io.File
 import javax.imageio.ImageIO
 
-val bot = telegramBot(botToken) {}
+lateinit var bot: TelegramBot
 suspend fun main() {
-    KSLog.configure("TonAlertBot")
-    longPolling {
+    AppConfig.init("TonAlertBot")
+    bot = longPolling {
         setMyCommands(
             BotCommand("price", "get ton price")
         )
         onCommand("price") {
             sendAnswer(it.chat.id)
         }
-    }
+    }.first
 
     doOnce("0 0 * * *") {
         KSLog.info("send pricing")
