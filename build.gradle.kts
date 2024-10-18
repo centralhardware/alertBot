@@ -12,11 +12,12 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
+    maven("https://nexus.inmo.dev/repository/maven-releases/")
 }
 
 dependencies {
-    implementation("dev.inmo:tgbotapi:18.2.1")
-    implementation("com.github.centralhardware:telegram-bot-commons:c236d89434")
+    implementation("dev.inmo:tgbotapi:18.2.2-branch_18.2.2-build2465")
+    implementation("com.github.centralhardware:telegram-bot-commons:1e503cc156")
     implementation("io.ktor:ktor-client-core-jvm:2.3.12")
     implementation("dev.inmo:krontab:2.5.0")
     implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.7.1")
