@@ -23,11 +23,11 @@ suspend fun getChart(points: Int, startDate: LocalDateTime.() -> LocalDateTime):
                 url {
                     parameters.append(
                         "start_date",
-                        LocalDateTime.now().startDate().toEpochSecond(ZoneOffset.UTC).toString()
+                        LocalDateTime.now().startDate().toEpochSecond(ZoneOffset.UTC).toString(),
                     )
                     parameters.append(
                         "end_date",
-                        LocalDateTime.now().toEpochSecond(ZoneOffset.UTC).toString()
+                        LocalDateTime.now().toEpochSecond(ZoneOffset.UTC).toString(),
                     )
                     parameters.append("points", points.toString())
                 }

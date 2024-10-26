@@ -9,7 +9,7 @@ fun Chart.toDataset() =
     mapOf(
         "date" to
             points.map { it.first().toLong().toLocalDateTime().atZone(ZoneId.of("UTC")) }.toList(),
-        "price(EUR)" to points.map { it.last().toDouble() }.toList()
+        "price(EUR)" to points.map { it.last().toDouble() }.toList(),
     )
 
 fun Long.toLocalDateTime(): LocalDateTime =

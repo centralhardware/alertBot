@@ -84,7 +84,6 @@ suspend fun getMessage(): String =
         diff_24h: ${it.diff24h["EUR"]}
         diff_7d: ${it.diff7d["EUR"]}
         diff_30d: ${it.diff30d["EUR"]}
-    """.trimIndent(
-        )
-    }
-        ?: ""
+    """
+            .trimIndent()
+    } ?: ""
