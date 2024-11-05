@@ -1,6 +1,7 @@
 import dev.inmo.krontab.doOnce
 import dev.inmo.kslog.common.KSLog
 import dev.inmo.kslog.common.info
+import dev.inmo.micro_utils.common.Warning
 import dev.inmo.tgbotapi.AppConfig
 import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
@@ -12,6 +13,7 @@ import dev.inmo.tgbotapi.types.BotCommand
 import dev.inmo.tgbotapi.types.IdChatIdentifier
 import dev.inmo.tgbotapi.types.media.TelegramMediaPhoto
 import dev.inmo.tgbotapi.types.toChatId
+import dev.inmo.tgbotapi.utils.RiskFeature
 import java.io.File
 import javax.imageio.ImageIO
 import kotlinx.datetime.LocalDateTime
@@ -25,6 +27,7 @@ import org.jetbrains.kotlinx.kandy.util.color.Color.Companion.BLUE
 
 lateinit var bot: TelegramBot
 
+@OptIn(Warning::class)
 suspend fun main() {
     AppConfig.init("TonAlertBot")
     bot =
@@ -34,12 +37,10 @@ suspend fun main() {
             }
             .first
 
-    doOnce("0 0 * * *") {
-        KSLog.info("send pricing")
-        sendAnswer(System.getenv("CHAT").toLong().toChatId())
-    }
+    doOnce("0 0 * * *") { sendAnswer(System.getenv("CHAT").toLong().toChatId()) }
 }
 
+@OptIn(RiskFeature::class)
 suspend fun sendAnswer(chatId: IdChatIdentifier) {
     val photos =
         getChartImages()
@@ -79,6 +80,7 @@ fun createPlot(dataset: Map<String, List<Any>>, period: String) =
 
 suspend fun getMessage(): String =
     getRates()?.let {
+        PriceMapper.save(it.prices["EUR"].toString().substring(0, 5).toDouble())
         """
         price: ${it.prices["EUR"].toString().substring(0, 5)}
         diff_24h: ${it.diff24h["EUR"]}
