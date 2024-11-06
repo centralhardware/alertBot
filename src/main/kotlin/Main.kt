@@ -1,5 +1,6 @@
-import dev.inmo.krontab.doOnce
+import dev.inmo.krontab.doInfinity
 import dev.inmo.kslog.common.KSLog
+import dev.inmo.kslog.common.error
 import dev.inmo.kslog.common.info
 import dev.inmo.micro_utils.common.Warning
 import dev.inmo.tgbotapi.AppConfig
@@ -17,9 +18,7 @@ import dev.inmo.tgbotapi.types.toChatId
 import dev.inmo.tgbotapi.utils.RiskFeature
 import java.io.File
 import javax.imageio.ImageIO
-import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.kotlinx.dataframe.api.column
@@ -46,14 +45,18 @@ suspend fun main() {
             .first
 
     coroutineScope {
-        launch { doOnce("0 0 * * *") { sendAnswer(System.getenv("CHAT").toLong().toChatId()) } }
         launch {
-            while (true) {
+            doInfinity("0 0 /1 * *") {
+                runCatching { sendAnswer(System.getenv("CHAT").toLong().toChatId()) }
+                    .onFailure { KSLog.error(it) }
+            }
+        }
+        launch {
+            doInfinity("0 /1 * * *") {
                 KSLog.info("saving price")
                 getRates()?.let {
                     PriceMapper.save(it.prices["EUR"].toString().substring(0, 5).toDouble())
                 }
-                delay(1.minutes)
             }
         }
     }
