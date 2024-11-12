@@ -17,7 +17,7 @@ repositories {
 val clickhouseVersion = "0.7.1-patch1"
 
 dependencies {
-    implementation("dev.inmo:tgbotapi:20.0.0")
+    implementation("dev.inmo:tgbotapi:20.0.1")
     implementation("com.github.centralhardware:telegram-bot-commons:d96b131958")
     implementation("com.clickhouse:clickhouse-jdbc:$clickhouseVersion")
     implementation("com.clickhouse:clickhouse-http-client:$clickhouseVersion")
