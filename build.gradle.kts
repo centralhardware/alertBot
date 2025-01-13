@@ -21,7 +21,7 @@ dependencies {
     implementation("com.github.centralhardware:telegram-bot-commons:34c054a4a1")
     implementation("com.clickhouse:clickhouse-jdbc:$clickhouseVersion")
     implementation("com.clickhouse:clickhouse-http-client:$clickhouseVersion")
-    implementation("com.github.seratch:kotliquery:1.9.0")
+    implementation("com.github.seratch:kotliquery:1.9.1")
     implementation("io.ktor:ktor-client-core-jvm:3.0.3")
     implementation("dev.inmo:krontab:2.7.1")
     implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.7.1")
