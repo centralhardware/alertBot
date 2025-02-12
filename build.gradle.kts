@@ -22,7 +22,7 @@ dependencies {
     implementation("com.clickhouse:clickhouse-jdbc:$clickhouseVersion")
     implementation("com.clickhouse:clickhouse-http-client:$clickhouseVersion")
     implementation("com.github.seratch:kotliquery:1.9.1")
-    implementation("io.ktor:ktor-client-core-jvm:3.0.3")
+    implementation("io.ktor:ktor-client-core-jvm:3.1.0")
     implementation("dev.inmo:krontab:2.7.1")
     implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.8.0")
 }
