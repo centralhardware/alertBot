@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.inmo:tgbotapi:26.1.0")
+    implementation("dev.inmo:tgbotapi:27.0.0")
     implementation("com.github.centralhardware:ktgbotapi-commons:0d89074d13")
     implementation("com.clickhouse:clickhouse-jdbc:0.9.0")
     implementation("com.github.seratch:kotliquery:1.9.1")
