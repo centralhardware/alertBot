@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     implementation("dev.inmo:tgbotapi:27.1.0")
-    implementation("com.github.centralhardware:ktgbotapi-commons:0d89074d13")
+    implementation("com.github.centralhardware:ktgbotapi-commons:063599df7c")
     implementation("com.clickhouse:clickhouse-jdbc:0.9.1")
     implementation("com.github.seratch:kotliquery:1.9.1")
     implementation("io.ktor:ktor-client-core-jvm:3.2.3")
