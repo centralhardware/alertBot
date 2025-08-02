@@ -4,7 +4,6 @@ import dev.inmo.kslog.common.error
 import dev.inmo.kslog.common.info
 import dev.inmo.micro_utils.common.Warning
 import dev.inmo.tgbotapi.AppConfig
-import dev.inmo.tgbotapi.Trace
 import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.extensions.api.bot.setMyCommands
 import dev.inmo.tgbotapi.extensions.api.send.media.sendMediaGroup
@@ -38,7 +37,6 @@ suspend fun main() {
         longPolling {
                 setMyCommands(BotCommand("price", "get ton price"))
                 onCommand("price") {
-                    Trace.save("checkPrice", mapOf("chatId" to it.chat.id.chatId.long.toString()))
                     sendAnswer(it.chat.id)
                 }
             }
