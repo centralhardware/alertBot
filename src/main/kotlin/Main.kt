@@ -49,14 +49,6 @@ suspend fun main() {
                     .onFailure { KSLog.error(it) }
             }
         }
-        launch {
-            doInfinity("0 /1 * * *") {
-                KSLog.info("saving price")
-                getRates()?.let {
-                    PriceMapper.save(it.prices["EUR"].toString().substring(0, 5).toDouble())
-                }
-            }
-        }
     }
 }
 
@@ -100,7 +92,6 @@ fun createPlot(dataset: Map<String, List<Any>>, period: String) =
 
 suspend fun getMessage(): String =
     getRates()?.let {
-        PriceMapper.save(it.prices["EUR"].toString().substring(0, 5).toDouble())
         """
         price: ${it.prices["EUR"].toString().substring(0, 5)}
         diff_24h: ${it.diff24h["EUR"]}
