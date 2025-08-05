@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.inmo:tgbotapi:27.1.0")
+    implementation("dev.inmo:tgbotapi:27.1.1")
     implementation("com.github.centralhardware:ktgbotapi-commons:beafbfc9a8")
     implementation("io.ktor:ktor-client-core-jvm:3.2.3")
     implementation("dev.inmo:krontab:2.7.2")
