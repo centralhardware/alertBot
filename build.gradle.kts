@@ -12,9 +12,11 @@ repositories {
     maven("https://jitpack.io")
 }
 
+val ktgbotapiVersion = "27.1.2"
+
 dependencies {
-    implementation("dev.inmo:tgbotapi:27.1.2")
-    implementation("com.github.centralhardware:ktgbotapi-commons:beafbfc9a8")
+    implementation("dev.inmo:tgbotapi:$ktgbotapiVersion")
+    implementation("com.github.centralhardware:ktgbotapi-commons:$ktgbotapiVersion-1")
     implementation("io.ktor:ktor-client-core-jvm:3.2.3")
     implementation("dev.inmo:krontab:2.7.2")
     implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.8.0")
