@@ -66,6 +66,14 @@ suspend fun sendAnswer(chatId: IdChatIdentifier) {
     val msg = getMessage()
     photos[0] = TelegramMediaPhoto(photos.first().file, msg)
     bot.sendMediaGroup(chatId, photos)
+    val spreadsheetId = System.getenv("SPREADSHEET_ID")
+    if (spreadsheetId != null) {
+        val sheet = System.getenv("SHEET_NAME") ?: "Sheet1"
+        val cell = System.getenv("CELL_ADDRESS") ?: "A1"
+        getRates()?.prices?.get("EUR")?.toString()?.let { priceValue ->
+            updateSheet(spreadsheetId, sheet, cell, priceValue)
+        }
+    }
     KSLog.info(msg)
 }
 

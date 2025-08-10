@@ -20,6 +20,9 @@ dependencies {
     implementation("io.ktor:ktor-client-core-jvm:3.2.3")
     implementation("dev.inmo:krontab:2.7.2")
     implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.8.0")
+    implementation("com.google.api-client:google-api-client:2.2.0")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.20.0")
+    implementation("com.google.apis:google-api-services-sheets:v4-rev20240423-2.0.0")
 }
 
 tasks.test {
