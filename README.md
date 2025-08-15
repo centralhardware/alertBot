@@ -15,7 +15,7 @@ A Telegram bot that tracks TON cryptocurrency prices in EUR and provides price a
 
 ## Requirements
 
-- Java 22 or later
+- Java 24 or later
 - Gradle
 - Telegram Bot Token
 - ClickHouse database
