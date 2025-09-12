@@ -18,7 +18,7 @@ val ktgbotapiVersion = "28.0.0"
 dependencies {
     implementation("dev.inmo:tgbotapi:$ktgbotapiVersion")
     implementation("com.github.centralhardware:ktgbotapi-commons:$ktgbotapiVersion")
-    implementation("io.ktor:ktor-client-core-jvm:3.2.3")
+    implementation("io.ktor:ktor-client-core-jvm:3.3.0")
     implementation("dev.inmo:krontab:2.7.2")
     implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.8.0")
 }
