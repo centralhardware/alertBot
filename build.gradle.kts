@@ -20,7 +20,7 @@ dependencies {
     implementation("com.github.centralhardware:ktgbotapi-commons:$ktgbotapiVersion")
     implementation("io.ktor:ktor-client-core-jvm:3.3.0")
     implementation("dev.inmo:krontab:2.7.2")
-    implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.8.0")
+    implementation("org.jetbrains.kotlinx:kandy-lets-plot:0.8.1n")
 }
 
 jib {
